@@ -4,6 +4,7 @@ import { Button, Input } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { fetchCoordinatesByLocationName } from './utils';
 import 'leaflet/dist/leaflet.css';
+import { useMap } from 'react-leaflet';
 
 import useCoordsStore from '../../../stores/useCoordsStore';
 
@@ -53,8 +54,6 @@ export default function LocationPicker({
 		}
 	}, [coords]);
 
-	useEffect(() => {}, []);
-
 	return (
 		<div className="w-1/2 flex items-center justify-start flex-col gap-[30px] ">
 			<div>
@@ -62,7 +61,7 @@ export default function LocationPicker({
 			</div>
 			<MapContainer
 				className="w-[100%] h-[400px]"
-				center={[50.2598987, 19.0215852]}
+				center={coords}
 				zoom={13}
 				scrollWheelZoom={false}
 			>
@@ -75,6 +74,7 @@ export default function LocationPicker({
 						A pretty CSS3 popup. <br /> Easily customizable.
 					</Popup>
 				</Marker>
+				<RecenterAutomatically coords={coords} />
 			</MapContainer>
 			<div className="w-full flex items-center justify-center gap-[30px]">
 				<Input
@@ -92,3 +92,11 @@ export default function LocationPicker({
 		</div>
 	);
 }
+
+const RecenterAutomatically = ({ coords }: { coords: LatLngExpression }) => {
+	const map = useMap();
+	useEffect(() => {
+		map.setView(coords);
+	}, [coords]);
+	return null;
+};

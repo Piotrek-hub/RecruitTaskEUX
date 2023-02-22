@@ -1,6 +1,10 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import Result from '../components/Result';
+import dynamic from 'next/dynamic';
+
+const Result = dynamic(() => import('../components/Result'), {
+	ssr: false,
+});
 
 const ResultPage: NextPage = () => {
 	return (

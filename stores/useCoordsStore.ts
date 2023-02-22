@@ -2,8 +2,8 @@ import { LatLngExpression } from 'leaflet';
 import { create } from 'zustand';
 
 const useCoordsStore = create((set) => ({
-	location: [0, 0],
-	destination: [0, 0],
+	location: [50, 20],
+	destination: [50, 20],
 	setLocation: (location: LatLngExpression) => {
 		set({ location: location });
 	},
