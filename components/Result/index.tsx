@@ -6,6 +6,7 @@ import useCoordsStore from '../../stores/useCoordsStore';
 import { useEffect, useState } from 'react';
 import getRoute from './utils';
 import useTransportTypeStore from '../../stores/useTransportTypeStore';
+import { useToast } from '@chakra-ui/react';
 
 export default function Result() {
 	const limeOptions = { color: 'lime' };
@@ -15,6 +16,9 @@ export default function Result() {
 
 	const [route, setRoute] = useState<any[][]>([location]);
 
+	const toast = useToast();
+	const id = 'error-toast';
+
 	const transportType = useTransportTypeStore(
 		(store: any) => store.transportType
 	);
@@ -22,6 +26,19 @@ export default function Result() {
 	useEffect(() => {
 		getRoute(location, destination, transportType).then((res) => {
 			console.log(res);
+			if (res.statusCode >= 400) {
+				if (!toast.isActive(id)) {
+					toast({
+						id: id,
+						title: `${res.message}`,
+						status: 'error',
+						isClosable: true,
+						position: 'bottom-right',
+					});
+				}
+
+				return;
+			}
 			const r = res.features[0].geometry.coordinates[0];
 			const reversedRoute = r.map((c) => c.reverse());
 
