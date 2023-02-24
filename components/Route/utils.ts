@@ -11,10 +11,10 @@ export default async function getRoute(
 		redirect: 'follow',
 	};
 
-	const url = `https://api.geoapify.com/v1/routing?waypoints=${location.join(
-		','
-	)}|
-	${destination.join(
+	const url = `https://api.geoapify.com/v1/routing?waypoints=${(
+		location as number[]
+	).join(',')}|
+	${(destination as number[]).join(
 		','
 	)}&mode=${transportType}&apiKey=949ce2dc046a465980b1bed473f7328e`;
 

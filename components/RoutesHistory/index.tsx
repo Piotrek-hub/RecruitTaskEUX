@@ -49,7 +49,9 @@ export default function RoutesHistory() {
 					</Thead>
 					<Tbody>
 						{routesHistory.map((route: Route, idx: number) => {
-							return <Route route={route} idx={idx + 1} />;
+							return (
+								<Route route={route} idx={idx + 1} key={idx} />
+							);
 						})}
 					</Tbody>
 				</Table>
