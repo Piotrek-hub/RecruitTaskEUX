@@ -13,11 +13,12 @@ import useHistoryStore from '../../stores/useHistoryStore';
 import { TransportType } from '../../types/enums';
 import useCostStore from '../../stores/useCostStore';
 import { formatDistance, formatTime } from '../RoutesHistory/utils';
+import LoadingScreen from '../LoadingScreen';
 
 export default function RouteComponent() {
 	const [route, setRoute] = useState<LatLngExpression[]>([]);
-	const [time, setTime] = useState<number>(-1);
-	const [distance, setDistance] = useState<number>(-1);
+	const [isLoadingScreenVisible, setLoadingScreenVisibility] =
+		useState<boolean>(true);
 
 	const toast = useToast();
 	const id = 'error-toast';
@@ -34,8 +35,8 @@ export default function RouteComponent() {
 	const addRouteToHistory = useHistoryStore((state) => state.addRoute);
 
 	useEffect(() => {
-		getRoute(location.coords, destination.coords, transportType).then(
-			(res) => {
+		getRoute(location.coords, destination.coords, transportType)
+			.then((res) => {
 				if (res.statusCode >= 400) {
 					if (!toast.isActive(id)) {
 						toast({
@@ -71,8 +72,8 @@ export default function RouteComponent() {
 					ferry: ferry == undefined ? false : ferry,
 				};
 				addRouteToHistory(r);
-			}
-		);
+			})
+			.then(() => setLoadingScreenVisibility(false));
 	}, []);
 
 	const renderPolyline = (r: any) => {
@@ -80,28 +81,34 @@ export default function RouteComponent() {
 	};
 
 	return (
-		<div className="max-w-[1280px] mt-[50px] mx-auto grid place-items-center">
-			<MapContainer
-				className="w-[100%] h-[600px]"
-				center={location.coords}
-				zoom={13}
-				scrollWheelZoom={false}
-			>
-				<TileLayer
-					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-				/>
-				<Marker position={location.coords}>
-					<Popup>Location</Popup>
-				</Marker>
-				<Marker position={destination.coords}>
-					<Popup>Destination</Popup>
-				</Marker>
-				{renderPolyline(route)}
-				<RecenterAutomatically coords={location.coords} />
-			</MapContainer>
-			<RoutesHistory />
-		</div>
+		<>
+			{isLoadingScreenVisible ? (
+				<LoadingScreen />
+			) : (
+				<div className="max-w-[1280px] mt-[50px] mx-auto grid place-items-center ">
+					<MapContainer
+						className="w-[100%] h-[600px] overflow-hidden"
+						center={[50, 20]}
+						zoom={13}
+						scrollWheelZoom={false}
+					>
+						<TileLayer
+							attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+							url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+						/>
+						<Marker position={[50, 20]}>
+							<Popup>Location</Popup>
+						</Marker>
+						<Marker position={[50, 20]}>
+							<Popup>Destination</Popup>
+						</Marker>
+						{/* {renderPolyline(route)} */}
+						{/* <RecenterAutomatically coords={location.coords} /> */}
+					</MapContainer>
+					<RoutesHistory />
+				</div>
+			)}
+		</>
 	);
 }
 

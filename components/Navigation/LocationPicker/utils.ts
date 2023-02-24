@@ -25,5 +25,5 @@ export async function fetchAutocompleteLocations(name: string) {
 	)
 		.then((response) => response.text())
 		.then((result) => JSON.parse(result))
-		.catch((error) => error);
+		.catch((error) => console.log(error));
 }

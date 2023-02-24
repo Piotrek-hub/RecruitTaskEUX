@@ -1,11 +1,10 @@
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { featureGroup, LatLngExpression } from 'leaflet';
-import { Button, Input } from '@chakra-ui/react';
+import { Button, Input, useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { fetchCoordinatesByLocationName } from './utils';
 import 'leaflet/dist/leaflet.css';
 import { useMap } from 'react-leaflet';
-
 import { Location } from '../../../types/interfaces';
 
 interface LocationPickerProps {
@@ -19,6 +18,8 @@ export default function LocationPicker({
 	location,
 	setLocation,
 }: LocationPickerProps) {
+	const toast = useToast();
+
 	const [input, setInput] = useState<string>('');
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -30,24 +31,32 @@ export default function LocationPicker({
 				if (res.features.length == 0) {
 					toast({
 						id: '',
-						title: `Localization not found`,
+						title: `Location not found`,
 						status: 'error',
 						isClosable: true,
 						position: 'bottom-right',
 					});
+					return;
 				}
 				const coords: LatLngExpression =
 					res.features[0].geometry.coordinates.reverse();
 				setLocation({ coords: coords, name: input });
 			})
-			.then(() => setIsLoading(false))
 			.catch((err) => {
-				setIsLoading(false);
-			});
+				console.log(err);
+				toast({
+					id: '',
+					title: `Error`,
+					status: 'error',
+					isClosable: true,
+					position: 'bottom-right',
+				});
+			})
+			.then(() => setIsLoading(false));
 	};
 
 	return (
-		<div className="w-1/2 flex items-center justify-start flex-col gap-[30px] ">
+		<div className="w-full flex items-center justify-start flex-col gap-[30px] ">
 			<div className="flex items-center justify-between flex-col">
 				<span className="text-2xl font-bold ">{title}</span>
 				<span className="text-md font-normal uppercase">
@@ -71,6 +80,7 @@ export default function LocationPicker({
 			</MapContainer>
 			<div className="w-full flex items-center justify-center gap-[30px]">
 				<Input
+					onBlur={() => handleSearch()}
 					className="max-w-[350px]"
 					placeholder={location.name}
 					onChange={(e: any) => setInput(e.target.value)}
@@ -91,15 +101,6 @@ const RecenterAutomatically = ({ coords }: { coords: LatLngExpression }) => {
 	const map = useMap();
 	useEffect(() => {
 		map.setView(coords);
-	}, [coords]);
+	}, [coords, map]);
 	return null;
 };
-function toast(arg0: {
-	id: any;
-	title: string;
-	status: string;
-	isClosable: boolean;
-	position: string;
-}) {
-	throw new Error('Function not implemented.');
-}

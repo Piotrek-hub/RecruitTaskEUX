@@ -24,6 +24,7 @@ import { Route } from '../../types/interfaces';
 import { BiBody, BiBus, BiCar } from 'react-icons/bi';
 import { FaBusAlt, FaMotorcycle, FaBicycle } from 'react-icons/fa';
 import { formatDistance, formatTime } from './utils';
+import jsPDF from 'jspdf';
 
 export default function RoutesHistory() {
 	const routesHistory: Route[] = useHistoryStore((state) => state.routes);
@@ -61,6 +62,24 @@ export default function RoutesHistory() {
 }
 
 function Route({ route, idx }: { route: Route; idx: number }) {
+	const downloadPdf = () => {
+		const doc = new jsPDF();
+		doc.text(`Location: ${route.location.name}`, 10, 10);
+		doc.text(`Destination: ${route.destination.name}`, 10, 30);
+		doc.text(`Distance: ${formatDistance(route.distance)}`, 10, 50);
+		doc.text(`Time: ${formatTime(route.time)}`, 10, 70);
+		doc.text(`Days Needed ${String(route.daysNeeded)}`, 10, 90);
+		doc.text(
+			`Total cost: ${Math.round(route.totalCost).toFixed(1)} zł`,
+			10,
+			110
+		);
+		doc.text(`Transport Type: ${route.transportType}`, 10, 130);
+		doc.text(`Is ferry needed: ${String(route.ferry)}`, 10, 150);
+
+		doc.save(`${route.location.name}-${route.destination.name}.pdf`);
+	};
+
 	return (
 		<Tr>
 			<Td>{idx}</Td>
@@ -82,6 +101,15 @@ function Route({ route, idx }: { route: Route; idx: number }) {
 				<TransportTypeIcon transportType={route.transportType} />
 			</Td>
 			<Td className="capitalize">{String(route.ferry)}</Td>
+			<Td>
+				<Button
+					colorScheme={'purple'}
+					variant="outline"
+					onClick={downloadPdf}
+				>
+					Download PDF
+				</Button>
+			</Td>
 		</Tr>
 	);
 }
@@ -96,12 +124,10 @@ function TransportTypeIcon({
 			<Badge fontSize={20}>
 				{transportType == TransportType.Walk && <BiBody />}
 				{transportType == TransportType.Car && <BiCar />}
-				{transportType == TransportType.Bus && <FaBusAlt />}
-				{transportType == TransportType.Motorcycle && <BiBus />}
-				{transportType == TransportType.Bicycle && <FaMotorcycle />}
-				{transportType == TransportType.PublicTransport && (
-					<FaBicycle />
-				)}
+				{transportType == TransportType.Bus && <BiBus />}
+				{transportType == TransportType.Motorcycle && <FaMotorcycle />}
+				{transportType == TransportType.Bicycle && <FaBicycle />}
+				{transportType == TransportType.PublicTransport && <FaBusAlt />}
 			</Badge>
 			<span className="text-md capitalize">{transportType}</span>
 		</div>

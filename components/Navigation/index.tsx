@@ -12,6 +12,7 @@ const LocationPicker = dynamic(() => import('./LocationPicker'), {
 export default function Navigation() {
 	const location = useCoordsStore((state: any) => state.location);
 	const destination = useCoordsStore((state: any) => state.destination);
+	const cost = useCostStore((state: any) => state.cost);
 
 	const setCost = useCostStore((state: any) => state.setCost);
 	const setLocation = useCoordsStore((state: any) => state.setLocation);
@@ -19,7 +20,7 @@ export default function Navigation() {
 
 	return (
 		<div className="max-w-[1280px] mx-auto px-[20px] mt-[50px] ">
-			<div className="flex items-center justify-between gap-[50px]">
+			<div className="flex items-center justify-between gap-[50px] max-md:flex-col">
 				<LocationPicker
 					title={'Location from'}
 					location={location}
@@ -31,11 +32,11 @@ export default function Navigation() {
 					setLocation={setDestination}
 				/>
 			</div>
-			<div className="flex items-end  mt-[30px]">
+			<div className="flex items-end  mt-[30px] max-md:flex-col max-md:gap-[30px]">
 				<TransportTypePicker />
 				<div className="w-full flex items-center justify-center gap-[30px] ">
 					<Input
-						placeholder="zł / km"
+						placeholder={`${cost} zł / km`}
 						width="min"
 						onChange={(e) => {
 							setCost(e.target.value);
