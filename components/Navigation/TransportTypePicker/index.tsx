@@ -20,7 +20,7 @@ export default function TransportTypePicker() {
 	}, [transportType]);
 
 	return (
-		<div className="w-full flex items-center justify-center gap-[10px] mt-[50px]">
+		<div className="w-full flex items-center justify-center gap-[10px]">
 			<Button
 				onClick={() => setTransportType(TransportType.Walk)}
 				colorScheme={

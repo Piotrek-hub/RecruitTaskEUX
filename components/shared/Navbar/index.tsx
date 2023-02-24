@@ -14,11 +14,6 @@ export default function Navbar() {
 						Navigation
 					</span>
 				</Link>
-				<Link href={'/result'}>
-					<span className="text-[16px] underline cursor-pointer">
-						Results
-					</span>
-				</Link>
 			</div>
 		</div>
 	);

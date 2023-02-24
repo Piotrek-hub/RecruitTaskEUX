@@ -27,7 +27,6 @@ export default function LocationPicker({
 
 		fetchCoordinatesByLocationName(input)
 			.then((res) => {
-				console.log(res);
 				if (res.features.length == 0) {
 					toast({
 						id: '',
@@ -73,6 +72,7 @@ export default function LocationPicker({
 			<div className="w-full flex items-center justify-center gap-[30px]">
 				<Input
 					className="max-w-[350px]"
+					placeholder={location.name}
 					onChange={(e: any) => setInput(e.target.value)}
 				/>
 				<Button

@@ -8,6 +8,9 @@ export interface Route {
 	transportType: TransportType;
 	time: number;
 	distance: number;
+	totalCost: number;
+	daysNeeded: number;
+	ferry: boolean;
 }
 
 export interface Location {

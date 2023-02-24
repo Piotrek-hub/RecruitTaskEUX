@@ -37,19 +37,20 @@ export default function RoutesHistory() {
 					<Thead>
 						<Tr>
 							<Th>No</Th>
-							<Th>From:</Th>
+							<Th>From</Th>
 							<Th>To</Th>
 							<Th>Length</Th>
 							<Th>Time (minutes)</Th>
+							<Th>Days</Th>
+							<Th>Cost</Th>
 							<Th>Transport Type</Th>
+							<Th>Ferry</Th>
 						</Tr>
 					</Thead>
 					<Tbody>
-						{routesHistory
-							.reverse()
-							.map((route: Route, idx: number) => {
-								return <Route route={route} idx={idx + 1} />;
-							})}
+						{routesHistory.map((route: Route, idx: number) => {
+							return <Route route={route} idx={idx + 1} />;
+						})}
 					</Tbody>
 				</Table>
 			</TableContainer>
@@ -58,7 +59,6 @@ export default function RoutesHistory() {
 }
 
 function Route({ route, idx }: { route: Route; idx: number }) {
-	console.log(route);
 	return (
 		<Tr>
 			<Td>{idx}</Td>
@@ -70,9 +70,16 @@ function Route({ route, idx }: { route: Route; idx: number }) {
 			</Td>
 			<Td>{formatDistance(route.distance)}</Td>
 			<Td>{formatTime(route.time)}</Td>
+			<Td>{route.daysNeeded}</Td>
+			<Td>
+				<Badge colorScheme={'orange'}>
+					{Math.round(route.totalCost).toFixed(1)}zł
+				</Badge>
+			</Td>
 			<Td>
 				<TransportTypeIcon transportType={route.transportType} />
 			</Td>
+			<Td className="capitalize">{String(route.ferry)}</Td>
 		</Tr>
 	);
 }

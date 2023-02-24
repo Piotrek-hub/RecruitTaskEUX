@@ -11,11 +11,14 @@ import { Location, Route } from '../../types/interfaces';
 import RoutesHistory from '../RoutesHistory';
 import useHistoryStore from '../../stores/useHistoryStore';
 import { TransportType } from '../../types/enums';
+import useCostStore from '../../stores/useCostStore';
+import { formatDistance, formatTime } from '../RoutesHistory/utils';
 
-export default function Result() {
+export default function RouteComponent() {
 	const [route, setRoute] = useState<LatLngExpression[]>([]);
 	const [time, setTime] = useState<number>(-1);
 	const [distance, setDistance] = useState<number>(-1);
+
 	const toast = useToast();
 	const id = 'error-toast';
 
@@ -26,6 +29,7 @@ export default function Result() {
 	const transportType = useTransportTypeStore(
 		(store: any) => store.transportType
 	);
+	const cost = useCostStore((store: any) => store.cost);
 
 	const addRouteToHistory = useHistoryStore((state) => state.addRoute);
 
@@ -46,33 +50,30 @@ export default function Result() {
 					return;
 				}
 
-				const { distance, time } = res.features[0].properties;
-				setDistance(distance);
-				setTime(time);
-
+				const { distance, time, ferry } = res.features[0].properties;
+				console.log(res.features[0].properties);
 				const reversedRoute: LatLngExpression[] =
 					res.features[0].geometry.coordinates[0].map(
 						(c: LatLngExpression[]) => c.reverse()
 					);
 
 				setRoute(reversedRoute);
+
+				const r: Route = {
+					location: location,
+					destination: destination,
+					path: reversedRoute,
+					transportType: transportType,
+					time: time,
+					distance: distance,
+					totalCost: (cost * distance) / 1000,
+					daysNeeded: Math.ceil(distance / 1000 / 800),
+					ferry: ferry == undefined ? false : ferry,
+				};
+				addRouteToHistory(r);
 			}
 		);
 	}, []);
-
-	useEffect(() => {
-		if (route.length > 0) {
-			const r: Route = {
-				location: location,
-				destination: destination,
-				path: route,
-				transportType: transportType,
-				time: time,
-				distance: distance,
-			};
-			addRouteToHistory(r);
-		}
-	}, [route]);
 
 	const renderPolyline = (r: any) => {
 		return <Polyline pathOptions={{ color: 'blue' }} positions={r} />;
@@ -80,11 +81,6 @@ export default function Result() {
 
 	return (
 		<div className="max-w-[1280px] mt-[50px] mx-auto grid place-items-center">
-			<div className="flex items-center justify-center gap-[10px] my-[10px]">
-				<Badge colorScheme={'blue'}>{location.name}</Badge>
-				<Badge colorScheme={'green'}>{destination.name}</Badge>
-				20km
-			</div>
 			<MapContainer
 				className="w-[100%] h-[600px]"
 				center={location.coords}
