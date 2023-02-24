@@ -4,7 +4,7 @@ import { AiFillGithub } from 'react-icons/ai';
 
 export default function Hero() {
 	return (
-		<div className="max-w-[1280px] flex items-center justify-center mx-auto mt-[200px] flex-col">
+		<div className="max-w-[1280px] flex items-center justify-center mx-auto mt-[50px] flex-col">
 			<div className="flex items-center justify-start flex-col">
 				<span className="text-[50px] font-bold">Welcome</span>
 				<span className="font-thin">Author: Piotr Gałka</span>

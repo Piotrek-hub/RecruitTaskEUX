@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Hero from '../components/Hero';
+import RoutesHistory from '../components/RoutesHistory';
 
 const Home: NextPage = () => {
 	return (
@@ -14,6 +15,9 @@ const Home: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<Hero />
+			<div className="w-min mx-auto">
+				<RoutesHistory />
+			</div>
 		</div>
 	);
 };

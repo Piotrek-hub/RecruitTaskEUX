@@ -6,7 +6,6 @@ export default async function getRoute(
 	destination: LatLngExpression,
 	transportType: TransportType
 ) {
-	console.log(transportType);
 	var requestOptions: RequestInit = {
 		method: 'GET',
 		redirect: 'follow',

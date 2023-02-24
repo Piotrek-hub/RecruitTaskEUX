@@ -6,55 +6,88 @@ import useCoordsStore from '../../stores/useCoordsStore';
 import { useEffect, useState } from 'react';
 import getRoute from './utils';
 import useTransportTypeStore from '../../stores/useTransportTypeStore';
-import { useToast } from '@chakra-ui/react';
+import { Badge, useToast } from '@chakra-ui/react';
+import { Location, Route } from '../../types/interfaces';
+import RoutesHistory from '../RoutesHistory';
+import useHistoryStore from '../../stores/useHistoryStore';
+import { TransportType } from '../../types/enums';
 
 export default function Result() {
-	const limeOptions = { color: 'lime' };
-
-	const location = useCoordsStore((state: any) => state.location);
-	const destination = useCoordsStore((state: any) => state.destination);
-
-	const [route, setRoute] = useState<any[][]>([location]);
-
+	const [route, setRoute] = useState<LatLngExpression[]>([]);
+	const [time, setTime] = useState<number>(-1);
+	const [distance, setDistance] = useState<number>(-1);
 	const toast = useToast();
 	const id = 'error-toast';
 
+	const location: Location = useCoordsStore((state: any) => state.location);
+	const destination: Location = useCoordsStore(
+		(state: any) => state.destination
+	);
 	const transportType = useTransportTypeStore(
 		(store: any) => store.transportType
 	);
 
+	const addRouteToHistory = useHistoryStore((state) => state.addRoute);
+
 	useEffect(() => {
-		getRoute(location, destination, transportType).then((res) => {
-			console.log(res);
-			if (res.statusCode >= 400) {
-				if (!toast.isActive(id)) {
-					toast({
-						id: id,
-						title: `${res.message}`,
-						status: 'error',
-						isClosable: true,
-						position: 'bottom-right',
-					});
+		getRoute(location.coords, destination.coords, transportType).then(
+			(res) => {
+				if (res.statusCode >= 400) {
+					if (!toast.isActive(id)) {
+						toast({
+							id: id,
+							title: `${res.message}`,
+							status: 'error',
+							isClosable: true,
+							position: 'bottom-right',
+						});
+					}
+
+					return;
 				}
 
-				return;
-			}
-			const r = res.features[0].geometry.coordinates[0];
-			const reversedRoute = r.map((c) => c.reverse());
+				const { distance, time } = res.features[0].properties;
+				setDistance(distance);
+				setTime(time);
 
-			setRoute(reversedRoute);
-		});
+				const reversedRoute: LatLngExpression[] =
+					res.features[0].geometry.coordinates[0].map(
+						(c: LatLngExpression[]) => c.reverse()
+					);
+
+				setRoute(reversedRoute);
+			}
+		);
 	}, []);
 
+	useEffect(() => {
+		if (route.length > 0) {
+			const r: Route = {
+				location: location,
+				destination: destination,
+				path: route,
+				transportType: transportType,
+				time: time,
+				distance: distance,
+			};
+			addRouteToHistory(r);
+		}
+	}, [route]);
+
 	const renderPolyline = (r: any) => {
-		return <Polyline pathOptions={limeOptions} positions={r} />;
+		return <Polyline pathOptions={{ color: 'blue' }} positions={r} />;
 	};
 
 	return (
-		<div className="max-w-[1280px] mt-[100px] mx-auto bg-red-200 grid place-items-center">
+		<div className="max-w-[1280px] mt-[50px] mx-auto grid place-items-center">
+			<div className="flex items-center justify-center gap-[10px] my-[10px]">
+				<Badge colorScheme={'blue'}>{location.name}</Badge>
+				<Badge colorScheme={'green'}>{destination.name}</Badge>
+				20km
+			</div>
 			<MapContainer
 				className="w-[100%] h-[600px]"
-				center={location}
+				center={location.coords}
 				zoom={13}
 				scrollWheelZoom={false}
 			>
@@ -62,15 +95,16 @@ export default function Result() {
 					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
-				<Marker position={location}>
+				<Marker position={location.coords}>
 					<Popup>Location</Popup>
 				</Marker>
-				<Marker position={destination}>
+				<Marker position={destination.coords}>
 					<Popup>Destination</Popup>
 				</Marker>
 				{renderPolyline(route)}
-				<RecenterAutomatically coords={location} />
+				<RecenterAutomatically coords={location.coords} />
 			</MapContainer>
+			<RoutesHistory />
 		</div>
 	);
 }

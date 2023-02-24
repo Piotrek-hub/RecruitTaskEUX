@@ -1,13 +1,22 @@
-import { LatLngExpression } from 'leaflet';
 import { create } from 'zustand';
+import { Location, Route } from '../types/interfaces';
 
-const useCoordsStore = create((set) => ({
-	location: [50, 20],
-	destination: [50, 20],
-	setLocation: (location: LatLngExpression) => {
+interface CoordsState {
+	location: Location;
+	destination: Location;
+
+	setLocation: (location: Location) => void;
+	setDestination: (location: Location) => void;
+}
+
+const useCoordsStore = create<CoordsState>()((set) => ({
+	location: { coords: [52.22977, 21.01178], name: 'Warszawa' },
+	destination: { coords: [52.22977, 21.01178], name: 'Warszawa' },
+
+	setLocation: (location: Location) => {
 		set({ location: location });
 	},
-	setDestination: (destination: LatLngExpression) => {
+	setDestination: (destination: Location) => {
 		set({ destination: destination });
 	},
 }));

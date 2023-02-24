@@ -1,67 +1,63 @@
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import { LatLngExpression } from 'leaflet';
+import { featureGroup, LatLngExpression } from 'leaflet';
 import { Button, Input } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { fetchCoordinatesByLocationName } from './utils';
 import 'leaflet/dist/leaflet.css';
 import { useMap } from 'react-leaflet';
 
-import useCoordsStore from '../../../stores/useCoordsStore';
+import { Location } from '../../../types/interfaces';
 
 interface LocationPickerProps {
 	title: string;
-	location?: boolean;
-	destination?: boolean;
+	location: Location;
+	setLocation: any;
 }
 
 export default function LocationPicker({
 	title,
 	location,
-	destination,
+	setLocation,
 }: LocationPickerProps) {
 	const [input, setInput] = useState<string>('');
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-
-	const [coords, setCoords] = useState<LatLngExpression>(
-		location
-			? useCoordsStore((state: any) => state.location)
-			: useCoordsStore((state: any) => state.destination)
-	);
-
-	const setLocation = useCoordsStore((state: any) => state.setLocation);
-	const setDestination = useCoordsStore((state: any) => state.setDestination);
 
 	const handleSearch = () => {
 		setIsLoading(true);
 
 		fetchCoordinatesByLocationName(input)
 			.then((res) => {
+				console.log(res);
+				if (res.features.length == 0) {
+					toast({
+						id: '',
+						title: `Localization not found`,
+						status: 'error',
+						isClosable: true,
+						position: 'bottom-right',
+					});
+				}
 				const coords: LatLngExpression =
 					res.features[0].geometry.coordinates.reverse();
-				setCoords(coords);
+				setLocation({ coords: coords, name: input });
 			})
 			.then(() => setIsLoading(false))
-			.catch((err) => console.log('ERR: ', err));
+			.catch((err) => {
+				setIsLoading(false);
+			});
 	};
-
-	useEffect(() => {
-		if (location) {
-			setLocation(coords);
-		}
-
-		if (destination) {
-			setDestination(coords);
-		}
-	}, [coords]);
 
 	return (
 		<div className="w-1/2 flex items-center justify-start flex-col gap-[30px] ">
-			<div>
+			<div className="flex items-center justify-between flex-col">
 				<span className="text-2xl font-bold ">{title}</span>
+				<span className="text-md font-normal uppercase">
+					{location.name || <>&nbsp;</>}
+				</span>
 			</div>
 			<MapContainer
 				className="w-[100%] h-[400px]"
-				center={coords}
+				center={location.coords}
 				zoom={13}
 				scrollWheelZoom={false}
 			>
@@ -69,12 +65,10 @@ export default function LocationPicker({
 					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
-				<Marker position={coords}>
-					<Popup>
-						A pretty CSS3 popup. <br /> Easily customizable.
-					</Popup>
+				<Marker position={location.coords}>
+					<Popup>{location.coords.toString()}</Popup>
 				</Marker>
-				<RecenterAutomatically coords={coords} />
+				<RecenterAutomatically coords={location.coords} />
 			</MapContainer>
 			<div className="w-full flex items-center justify-center gap-[30px]">
 				<Input
@@ -100,3 +94,12 @@ const RecenterAutomatically = ({ coords }: { coords: LatLngExpression }) => {
 	}, [coords]);
 	return null;
 };
+function toast(arg0: {
+	id: any;
+	title: string;
+	status: string;
+	isClosable: boolean;
+	position: string;
+}) {
+	throw new Error('Function not implemented.');
+}

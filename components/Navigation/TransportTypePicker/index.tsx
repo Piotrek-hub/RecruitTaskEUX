@@ -27,7 +27,7 @@ export default function TransportTypePicker() {
 					transportType == TransportType.Walk ? 'teal' : 'gray'
 				}
 			>
-				<BiBody width={30} height={30} />
+				<BiBody />
 			</Button>
 			<Button
 				onClick={() => setTransportType(TransportType.Car)}
