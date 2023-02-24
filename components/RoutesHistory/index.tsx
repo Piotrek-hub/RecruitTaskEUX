@@ -1,19 +1,11 @@
 import {
 	Badge,
 	Button,
-	Popover,
-	PopoverArrow,
-	PopoverBody,
-	PopoverCloseButton,
-	PopoverContent,
-	PopoverHeader,
-	PopoverTrigger,
 	Table,
 	TableCaption,
 	TableContainer,
 	Tbody,
 	Td,
-	Tfoot,
 	Th,
 	Thead,
 	Tr,
@@ -70,7 +62,7 @@ function Route({ route, idx }: { route: Route; idx: number }) {
 		doc.text(`Time: ${formatTime(route.time)}`, 10, 70);
 		doc.text(`Days Needed ${String(route.daysNeeded)}`, 10, 90);
 		doc.text(
-			`Total cost: ${Math.round(route.totalCost).toFixed(1)} zł`,
+			`Total cost: ${Math.round(route.totalCost).toFixed(1)} zl`,
 			10,
 			110
 		);

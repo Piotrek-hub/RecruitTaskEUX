@@ -6,13 +6,11 @@ import useCoordsStore from '../../stores/useCoordsStore';
 import { useEffect, useState } from 'react';
 import getRoute from './utils';
 import useTransportTypeStore from '../../stores/useTransportTypeStore';
-import { Badge, useToast } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
 import { Location, Route } from '../../types/interfaces';
 import RoutesHistory from '../RoutesHistory';
 import useHistoryStore from '../../stores/useHistoryStore';
-import { TransportType } from '../../types/enums';
 import useCostStore from '../../stores/useCostStore';
-import { formatDistance, formatTime } from '../RoutesHistory/utils';
 import LoadingScreen from '../LoadingScreen';
 
 export default function RouteComponent() {
@@ -52,7 +50,7 @@ export default function RouteComponent() {
 				}
 
 				const { distance, time, ferry } = res.features[0].properties;
-				console.log(res.features[0].properties);
+
 				const reversedRoute: LatLngExpression[] =
 					res.features[0].geometry.coordinates[0].map(
 						(c: LatLngExpression[]) => c.reverse()
@@ -102,8 +100,8 @@ export default function RouteComponent() {
 						<Marker position={[50, 20]}>
 							<Popup>Destination</Popup>
 						</Marker>
-						{/* {renderPolyline(route)} */}
-						{/* <RecenterAutomatically coords={location.coords} /> */}
+						{renderPolyline(route)}
+						<RecenterAutomatically coords={location.coords} />
 					</MapContainer>
 					<RoutesHistory />
 				</div>

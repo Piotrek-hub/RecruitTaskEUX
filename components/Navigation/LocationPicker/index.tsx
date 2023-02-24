@@ -1,5 +1,5 @@
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import { featureGroup, LatLngExpression } from 'leaflet';
+import { LatLngExpression } from 'leaflet';
 import { Button, Input, useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { fetchCoordinatesByLocationName } from './utils';
@@ -43,7 +43,6 @@ export default function LocationPicker({
 				setLocation({ coords: coords, name: input });
 			})
 			.catch((err) => {
-				console.log(err);
 				toast({
 					id: '',
 					title: `Error`,
