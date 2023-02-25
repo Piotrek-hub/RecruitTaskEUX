@@ -18,6 +18,10 @@ export default function Navigation() {
 	const setLocation = useCoordsStore((state: any) => state.setLocation);
 	const setDestination = useCoordsStore((state: any) => state.setDestination);
 
+	const handleCostInput = (value: string) => {
+		setCost(Number(value));
+	};
+
 	return (
 		<div className="max-w-[1280px] mx-auto px-[20px] mt-[50px] ">
 			<div className="flex items-center justify-between gap-[50px] max-md:flex-col">
@@ -38,9 +42,8 @@ export default function Navigation() {
 					<Input
 						placeholder={`${cost} zł / km`}
 						width="min"
-						onChange={(e) => {
-							setCost(e.target.value);
-						}}
+						type={'number'}
+						onChange={(e) => handleCostInput(e.target.value)}
 					/>
 					<Link href={'/route'}>
 						<Button colorScheme={'green'}>Get Route</Button>

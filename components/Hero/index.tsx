@@ -13,11 +13,11 @@ export default function Hero() {
 				<Link href={'/navigation'}>
 					<Button className="">Navigation</Button>
 				</Link>
-				<Button className="">
-					<Link href={'https://github.com/Piotrek-hub'}>
+				<Link href={'https://github.com/Piotrek-hub'}>
+					<Button className="">
 						<AiFillGithub />
-					</Link>
-				</Button>
+					</Button>
+				</Link>
 			</div>
 		</div>
 	);
